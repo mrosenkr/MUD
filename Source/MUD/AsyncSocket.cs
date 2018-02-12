@@ -9,6 +9,8 @@ namespace MUD
     {
         class AsyncSocket
         {
+            private const string NEWLINE = "\r\n";
+            private const string BACKSPACE = "\b";
             private Socket listener;
 
             public AsyncSocket()
@@ -96,13 +98,35 @@ namespace MUD
 
                     if (bytesRead > 0)
                     {
-                        command = Encoding.ASCII.GetString(client.Buffer, 0, bytesRead - 2);
+                        client.CurrentBufferPosition += bytesRead;
+                        
+                        command = Encoding.ASCII.GetString(client.Buffer, 0, client.CurrentBufferPosition);
 
-                        Console.WriteLine("Read {0} bytes from client. Data: {1}", command.Length, command);
+                        if (command.EndsWith(BACKSPACE))
+                        {
+                            if (client.CurrentBufferPosition < 2)
+                            {
+                                client.CurrentBufferPosition = 0;
+                            }
+                            else
+                            {
+                                client.CurrentBufferPosition -= 2;
+                            }
+                        }
+                        else if (client.CurrentBufferPosition >= Constants.BufferSize)
+                        {
+                            command = command.Substring(0, Constants.BufferSize - 2) + NEWLINE;
+                        }
 
-                        client.Commands.Enqueue(command);
+                        if (command.EndsWith(NEWLINE))
+                        {
+                            command = command.Substring(0, command.Length - 2);
+                            client.Commands.Enqueue(command);
+                            client.CurrentBufferPosition = 0;
+                            Console.WriteLine("Enqueued command: {1}", command.Length, command);
+                        }
 
-                        socket.BeginReceive(client.Buffer, 0, Constants.BufferSize, 0,
+                        socket.BeginReceive(client.Buffer, client.CurrentBufferPosition, Constants.BufferSize - client.CurrentBufferPosition, 0,
                             new AsyncCallback(ReadCallback), client);
                     }
                     else if (bytesRead == 0)
