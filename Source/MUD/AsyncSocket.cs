@@ -47,6 +47,7 @@ namespace MUD
                 {
                     listener.Bind(localEndPoint);
                     listener.Listen(maxBacklog);
+                    Console.WriteLine("Server up and running on {0}:{1}", ipAddress.ToString(), port);
 
                     listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
                 }
