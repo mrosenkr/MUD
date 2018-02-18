@@ -99,7 +99,7 @@ namespace MUD
                     if (bytesRead > 0)
                     {
                         client.CurrentBufferPosition += bytesRead;
-                        
+
                         command = Encoding.ASCII.GetString(client.Buffer, 0, client.CurrentBufferPosition);
 
                         if (command.EndsWith(BACKSPACE))
@@ -133,9 +133,6 @@ namespace MUD
                     {
                         Console.WriteLine("Client disconnected unexpectedly");
                         client.Disconnect();
-
-                        socket.Shutdown(SocketShutdown.Both);
-                        socket.Close();
                     }
                 }
             }
