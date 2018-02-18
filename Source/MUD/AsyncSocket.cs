@@ -126,8 +126,14 @@ namespace MUD
                             Console.WriteLine("Enqueued command: {1}", command.Length, command);
                         }
 
-                        socket.BeginReceive(client.Buffer, client.CurrentBufferPosition, Constants.BufferSize - client.CurrentBufferPosition, 0,
-                            new AsyncCallback(ReadCallback), client);
+                        try
+                        {
+                            socket.BeginReceive(client.Buffer, client.CurrentBufferPosition, Constants.BufferSize - client.CurrentBufferPosition, 0,
+                                new AsyncCallback(ReadCallback), client);
+                        }
+                        catch
+                        {
+                        }
                     }
                     else if (bytesRead == 0)
                     {

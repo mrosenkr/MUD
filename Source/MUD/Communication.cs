@@ -40,7 +40,13 @@ namespace MUD
         {   
             byte[] byteData = Encoding.ASCII.GetBytes(data);
 
-            socket.BeginSend(byteData, 0, byteData.Length, 0, null, socket);
+            try
+            {
+                socket.BeginSend(byteData, 0, byteData.Length, 0, null, socket);
+            }
+            catch
+            {
+            }
         }
 
         private void Interpret(Character ch, string command, string arguments)
